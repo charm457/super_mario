@@ -8,6 +8,7 @@
 #include "console_money.hpp"
 #include "console_ship.hpp"
 #include "ui_factory.hpp"
+#include "console_flying_enemy.hpp"
 
 namespace biv {
 	class ConsoleUIFactory : public UIFactory {
@@ -16,6 +17,7 @@ namespace biv {
 			std::vector<ConsoleBox*> boxes;
 			std::vector<ConsoleFullBox*> full_boxes;
 			std::vector<ConsoleShip*> ships;
+			std::vector<ConsoleFlyingEnemy*> flying_enemies;
 			ConsoleMario* mario = nullptr;
 			std::vector<ConsoleEnemy*> enemies;
 			std::vector<ConsoleMoney*> moneys;
@@ -30,6 +32,9 @@ namespace biv {
 			void create_enemy(
 				const Coord& top_left, const int width, const int height
 			) override;
+			void create_flying_enemy(
+                const Coord& top_left, const int width, const int height
+            ) override;
 			void create_full_box(
 				const Coord& top_left, const int width, const int height
 			) override;
