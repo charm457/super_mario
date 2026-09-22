@@ -39,3 +39,17 @@ void FlyingEnemy::process_vertical_static_collision(Rect* obj) noexcept {
 		vspeed = 0;
 	}
 }
+
+void FlyingEnemy::move_vertically() noexcept {
+	if (vspeed < 0) {
+		vspeed += V_ACCELERATION;
+	}
+	top_left.y += vspeed;
+	if (hspeed > 0 && top_left.x > 250) {
+		hspeed = -hspeed;
+		top_left.x = 250;
+	} else if (hspeed < 0 && top_left.x < 0) {
+		hspeed = -hspeed;
+		top_left.x = 0;
+	}
+}
