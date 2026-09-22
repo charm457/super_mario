@@ -22,6 +22,9 @@ void FlyingEnemy::process_horizontal_static_collision(Rect* obj) noexcept {
 	// При столкновении со стеной меняем направление полета
 	hspeed = -hspeed;
 	move_horizontally();
+	if (vspeed >= 0) {
+		vspeed = -0.25f;
+	}
 }
 
 void FlyingEnemy::process_mario_collision(Collisionable* mario) noexcept {
@@ -44,12 +47,21 @@ void FlyingEnemy::move_vertically() noexcept {
 	if (vspeed < 0) {
 		vspeed += V_ACCELERATION;
 	}
+	if (vspeed > 0) {
+		vspeed = -V_ACCELERATION;
+	}
 	top_left.y += vspeed;
 	if (hspeed > 0 && top_left.x > 250) {
 		hspeed = -hspeed;
 		top_left.x = 250;
+		if (vspeed >= 0) {
+			vspeed = -0.25f;
+		}
 	} else if (hspeed < 0 && top_left.x < 0) {
 		hspeed = -hspeed;
 		top_left.x = 0;
+		if (vspeed >= 0) {
+			vspeed = -0.25f;
+		}
 	}
 }
