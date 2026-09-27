@@ -23,6 +23,5 @@ namespace biv {
         private:
             static constexpr float JUMP_STRENGTH = -1.0f;
             bool grounded = true;
-            bool jump_pending = true;
     };
 }

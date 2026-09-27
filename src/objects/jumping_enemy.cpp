@@ -19,11 +19,7 @@ biv::Speed JumpingEnemy::get_speed() const noexcept {
 }
 
 void JumpingEnemy::process_horizontal_static_collision(Rect* obj) noexcept {
-    // Прыгающий враг на месте, горизонтальное отражение не нужно,
-    // но метод должен быть переопределён. Оставляем без изменений.
-    if (hspeed > 0.0f) hspeed = -hspeed;
-    if (hspeed < 0.0f) hspeed = -hspeed;
-    move_horizontally();
+    // Враг прыгает на месте, поэтому горизонтальный разворот не нужен.
 }
 
 void JumpingEnemy::process_mario_collision(Collisionable* mario) noexcept {
@@ -47,19 +43,14 @@ void JumpingEnemy::move_horizontally() noexcept {
 }
 
 void JumpingEnemy::move_vertically() noexcept {
-    if (!grounded) {
-        if (vspeed < 0) {
-            vspeed += V_ACCELERATION;
-        }
-        top_left.y += vspeed;
-        if (vspeed >= 0) {
-            grounded = true;
-        }
-    } else {
-        if (jump_pending) {
-            vspeed = JUMP_STRENGTH;
-            jump_pending = false;
-            grounded = false;
-        }
+    if (grounded) {
+        // Приземлился - снова прыгает вверх.
+        vspeed = JUMP_STRENGTH;
+        grounded = false;
     }
+
+    if (vspeed < MAX_V_SPEED) {
+        vspeed += V_ACCELERATION;
+    }
+    top_left.y += vspeed;
 }

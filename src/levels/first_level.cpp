@@ -23,6 +23,11 @@ void FirstLevel::init_data() {
 	ui_factory->create_mario({39, 10}, 3, 3);
 	
 	ui_factory->create_ship({20, 25}, 40, 2);
+
+	// Платформа позади уровня: с первого корабля на неё можно запрыгнуть,
+	// она немного отъезжает в сторону моря и возвращается обратно.
+	// Создаётся до последнего статического объекта уровня (последний - финиш).
+	ui_factory->create_moving_platform({3, 25}, 4, 1);
 	
 	ui_factory->create_full_box({30, 15}, 5, 3);
 	ui_factory->create_full_box({50, 15}, 5, 3);
@@ -38,6 +43,12 @@ void FirstLevel::init_data() {
 	ui_factory->create_ship({100, 25}, 20, 2);
 	ui_factory->create_ship({120, 20}, 10, 7);
 	ui_factory->create_ship({150, 25}, 40, 2);
+
+	// Платформа над морем (щель между кораблями x = 130..150).
+	// Важно: создаётся до последнего статического объекта уровня,
+	// т.к. последний статический объект считается финишем.
+	ui_factory->create_moving_platform({133, 25}, 4, 1);
+
 	ui_factory->create_ship({210, 20}, 15, 7);
 	
 	ui_factory->create_enemy({20, 5}, 3, 2);
@@ -47,5 +58,5 @@ void FirstLevel::init_data() {
 	ui_factory->create_enemy({125, 5}, 3, 2);
 	ui_factory->create_enemy({160, 5}, 3, 2);
 	ui_factory->create_flying_enemy({180, 14}, 3, 2);
-	ui_factory->create_jumping_enemy({60, 13}, 3, 2);
+	ui_factory->create_jumping_enemy({62, 17}, 3, 2);
 }
