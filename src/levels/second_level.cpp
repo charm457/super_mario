@@ -1,16 +1,18 @@
 #include "second_level.hpp"
 
+#include "third_level.hpp"
+
 using biv::SecondLevel;
 
 SecondLevel::SecondLevel(UIFactory* ui_factory) : GameLevel(ui_factory) {
 	init_data();
 }
 
-bool SecondLevel::is_final() const noexcept {
-	return true;
-}
-
 biv::GameLevel* SecondLevel::get_next() {
+	if (!next) {
+		clear_data();
+		next = new biv::ThirdLevel(ui_factory);
+	}
 	return next;
 }
 
@@ -19,19 +21,31 @@ biv::GameLevel* SecondLevel::get_next() {
 // ----------------------------------------------------------------------------
 void SecondLevel::init_data() {
 	ui_factory->create_mario({39, 10}, 3, 3);
-	
+
 	ui_factory->create_ship({20, 25}, 40, 2);
-	ui_factory->create_ship({60, 20}, 10, 7);
-	ui_factory->create_ship({80, 25}, 20, 2);
-	ui_factory->create_ship({120, 20}, 10, 7);
-	ui_factory->create_ship({150, 25}, 40, 2);
 
-	// Платформа над морем (щель между кораблями x = 130..150).
-	// Важно: создаётся до последнего статического объекта уровня,
-	// т.к. последний статический объект считается финишем.
-	ui_factory->create_moving_platform({133, 25}, 4, 1);
+	ui_factory->create_ship({60, 20}, 40, 7);
 
-	ui_factory->create_ship({210, 20}, 10, 7);
-	ui_factory->create_flying_enemy({170, 10}, 3, 2);
-	ui_factory->create_jumping_enemy({85, 22}, 3, 2);
+	ui_factory->create_box({65, 12}, 10, 3);
+	ui_factory->create_full_box({75, 12}, 5, 3);
+	ui_factory->create_box({80, 12}, 5, 3);
+	ui_factory->create_full_box({85, 12}, 5, 3);
+
+	ui_factory->create_ship({100, 25}, 30, 2);
+
+	ui_factory->create_moving_platform({140, 25}, 4, 1);
+
+	ui_factory->create_ship({160, 20}, 40, 7);
+	ui_factory->create_ship({200, 25}, 40, 2);
+
+	ui_factory->create_enemy({210, 5}, 3, 2);
+
+	ui_factory->create_ship({265, 20}, 25, 7);
+	ui_factory->create_ship({290, 25}, 40, 2);
+
+	ui_factory->create_jumping_enemy({300, 22}, 3, 2);
+
+	ui_factory->create_flying_enemy({140, 6}, 3, 2);
+
+	ui_factory->create_ship({355, 20}, 15, 7);
 }
