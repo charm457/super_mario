@@ -1,60 +1,44 @@
-/**
-	Движущаяся платформа над морем.
-
-	Особенности архитектуры игры, которые здесь учтены:
-
-	1. Марио перемещается не сам, а прокруткой карты (Mario::move_map_left /
-	   Mario::move_map_right). Поэтому платформа - MapMovable: при прокрутке
-	   карты она смещается вместе с уровнем и остаётся над тем же участком моря.
-
-	2. Movable::move_vertically() включает гравитацию, поэтому метод переопределён:
-	   платформа не падает.
-
-	3. Дистанция патрулирования считается по собственным шагам платформы, а не по
-	   абсолютной координате x. Прокрутка карты сдвигает x всех объектов, но не
-	   должна менять границы патруля.
-
-	4. Платформа регистрируется в Game как static obj, чтобы Марио мог на неё
-	   приземлиться (вертикальные статические столкновения). Поэтому платформу нужно
-	   создавать до последнего статического объекта уровня: последний статический
-	   объект считается финишем (Game::check_vertically_static_collisions).
-
-	5. Платформа не является Collisionable: она уже лежит в static_objs, а
-	   has_collision(self) всегда истинно, что ломало бы обработку столкновений.
-
-	6. Чтобы увезти Марио, платформа получает UIFactory* (как FullBox) и берёт
-	   актуального Марио через get_mario().
-*/
-
 #pragma once
 
 #include "movable.hpp"
 #include "rect_map_movable_adapter.hpp"
-#include "ui_factory.hpp"
 
 namespace biv {
-	class MovingPlatform : public RectMapMovableAdapter, public Movable {
-		private:
-			static constexpr float PLATFORM_SPEED = 0.1f;
-			static constexpr float PATROL_DISTANCE = 12.0f;
+    /**
+     * Движущаяся платформа знает только о самой себе:
+     * она патрулирует свой участок карты и разворачивается на его границах.
+     * Столкновения с Марио и с другими объектами обрабатываются в Game.
+     */
+    class MovingPlatform : public RectMapMovableAdapter, public Movable {
+        private:
+            static constexpr float BASE_SPEED = 0.2f;
+            // Насколько платформа отъезжает от своей начальной позиции.
+            static constexpr float PATROL_RANGE = 3.0f;
 
-			// Марио может находиться над опорой с небольшим зазором: вертикальное
-			// столкновение откатывает последний шаг падения. Допуск на этот зазор.
-			static constexpr int MARIO_TOP_TOLERANCE = 2;
+            float origin_x;        // Начальная позиция в координатах карты
+            int direction = -1;    // 1 - вправо, -1 - влево, 0 - стоим
 
-			UIFactory* ui_factory = nullptr;
+        public:
+            MovingPlatform(const Coord& top_left, int width, int height);
 
-			float passed_distance = 0;
+            void move_horizontally() noexcept override;
+            void move_vertically() noexcept override;
 
-			void carry_mario() noexcept;
-			bool is_mario_on_platform(const Mario*) const noexcept;
+            void move_map_left() noexcept override;
+            void move_map_right() noexcept override;
 
-		public:
-			MovingPlatform(
-				const Coord& top_left, const int width, const int height,
-				UIFactory* ui_factory);
+            void set_direction(int dir) noexcept;
+            void stop() noexcept;
 
-			void move_horizontally() noexcept override;
-			void move_vertically() noexcept override;
-	};
+            // Фактический шаг платформы за кадр: с ним она "везёт"
+            // объекты, которые стоят на ней.
+            float get_horizontal_speed() const noexcept { return hspeed; }
+
+            int get_platform_top() const noexcept { return RectMapMovableAdapter::get_top(); }
+            int get_platform_bottom() const noexcept { return RectMapMovableAdapter::get_bottom(); }
+            int get_platform_left() const noexcept { return RectMapMovableAdapter::get_left(); }
+            int get_platform_right() const noexcept { return RectMapMovableAdapter::get_right(); }
+            
+            Rect* as_rect() noexcept { return static_cast<RectMapMovableAdapter*>(this); }
+    };
 }

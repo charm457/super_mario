@@ -1,57 +1,63 @@
 #include "moving_platform.hpp"
 
+#include <algorithm>
+
+#include "map_movable.hpp"
+
 using biv::MovingPlatform;
 
-MovingPlatform::MovingPlatform(
-	const Coord& top_left, const int width, const int height,
-	UIFactory* ui_factory
-) : RectMapMovableAdapter(top_left, width, height), ui_factory(ui_factory) {
-	vspeed = 0;
-	hspeed = PLATFORM_SPEED;
+MovingPlatform::MovingPlatform(const Coord& top_left, int width, int height)
+    : Rect(top_left, width, height),
+      RectMapMovableAdapter(top_left, width, height),
+      Movable(top_left, width, height, 0, 0),
+      origin_x(top_left.x) {}
+
+void MovingPlatform::set_direction(int dir) noexcept {
+    if (dir > 0) {
+        direction = 1;
+    } else if (dir < 0) {
+        direction = -1;
+    } else {
+        stop();
+    }
+}
+
+void MovingPlatform::stop() noexcept {
+    direction = 0;
+    hspeed = 0;
 }
 
 void MovingPlatform::move_horizontally() noexcept {
-	carry_mario();
+    if (direction == 0) {
+        hspeed = 0;
+        return;
+    }
+    const float min_x = std::max(0.0f, origin_x - PATROL_RANGE);
+    const float max_x = origin_x + PATROL_RANGE;
 
-	top_left.x += hspeed;
+    float next_x = top_left.x + direction * BASE_SPEED;
+    if (next_x <= min_x) {
+        next_x = min_x;
+        direction = 1;
+    } else if (next_x >= max_x) {
+        next_x = max_x;
+        direction = -1;
+    }
 
-	// Считаем только собственные шаги платформы: прокрутка карты тоже меняет x,
-	// но она не должна влиять на длину патруля.
-	passed_distance += (hspeed > 0 ? hspeed : -hspeed);
-	if (passed_distance >= PATROL_DISTANCE) {
-		passed_distance = 0;
-		hspeed = -hspeed;
-	}
+    hspeed = next_x - top_left.x;
+    top_left.x = next_x;
 }
 
 void MovingPlatform::move_vertically() noexcept {
-	// Платформа летит над морем и не падает: гравитация для неё отключена.
+    // Парит в воздухе
 }
 
-void MovingPlatform::carry_mario() noexcept {
-	if (ui_factory == nullptr) {
-		return;
-	}
-
-	Mario* mario = ui_factory->get_mario();
-	if (mario == nullptr || !mario->is_active()) {
-		return;
-	}
-
-	if (is_mario_on_platform(mario)) {
-		mario->move_horizontal_offset(hspeed);
-	}
+void MovingPlatform::move_map_left() noexcept {
+    RectMapMovableAdapter::move_map_left();
+    origin_x -= MapMovable::MAP_STEP;
 }
 
-bool MovingPlatform::is_mario_on_platform(const Mario* mario) const noexcept {
-	const int feet = mario->get_bottom();
-	const int deck = get_top();
-
-	// Марио стоит (или висит в пределах допуска) на верхней грани платформы.
-	if (feet > deck || deck - feet > MARIO_TOP_TOLERANCE) {
-		return false;
-	}
-
-	// И при этом действительно находится над платформой, а не сбоку от неё.
-	return mario->get_right() > get_left() && mario->get_left() < get_right();
+void MovingPlatform::move_map_right() noexcept {
+    RectMapMovableAdapter::move_map_right();
+    origin_x += MapMovable::MAP_STEP;
 }

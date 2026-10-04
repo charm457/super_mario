@@ -63,16 +63,15 @@ void ConsoleUIFactory::create_jumping_enemy(
 }
 
 void ConsoleUIFactory::create_moving_platform(
-	const Coord& top_left, const int width, const int height
+    const Coord& top_left, const int width, const int height
 ) {
-	ConsoleMovingPlatform* platform =
-		new ConsoleMovingPlatform(top_left, width, height, this);
-	moving_platforms.push_back(platform);
-	game->add_map_movable(platform);
-	game->add_movable(platform);
-	// static obj нужен, чтобы Марио мог стоять на платформе.
-	game->add_static_obj(platform);
-	game_map->add_obj(platform);
+    ConsoleMovingPlatform* platform =
+        new ConsoleMovingPlatform(top_left, width, height);
+    moving_platforms.push_back(platform);
+    game->add_map_movable(platform);
+    game->add_movable(platform);
+    game->add_moving_platform(platform); 
+    game_map->add_obj(platform);
 }
 
 void ConsoleUIFactory::create_full_box(

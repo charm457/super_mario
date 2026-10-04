@@ -27,7 +27,7 @@ void FirstLevel::init_data() {
 	// Платформа позади уровня: с первого корабля на неё можно запрыгнуть,
 	// она немного отъезжает в сторону моря и возвращается обратно.
 	// Создаётся до последнего статического объекта уровня (последний - финиш).
-	ui_factory->create_moving_platform({3, 25}, 4, 1);
+	ui_factory->create_moving_platform({3, 25}, 7, 1);
 	
 	ui_factory->create_full_box({30, 15}, 5, 3);
 	ui_factory->create_full_box({50, 15}, 5, 3);

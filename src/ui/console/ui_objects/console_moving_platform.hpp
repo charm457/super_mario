@@ -4,12 +4,10 @@
 #include "moving_platform.hpp"
 
 namespace biv {
-	class ConsoleMovingPlatform : public MovingPlatform, public ConsoleUIObjectRectAdapter {
-		public:
-			ConsoleMovingPlatform(
-				const Coord& top_left, const int width, const int height,
-				UIFactory* ui_factory);
+    class ConsoleMovingPlatform : public MovingPlatform, public ConsoleUIObjectRectAdapter {
+        public:
+            ConsoleMovingPlatform(const Coord& top_left, int width, int height);
 
-			char get_brush() const noexcept override;
-	};
+            char get_brush() const noexcept override;
+    };
 }
