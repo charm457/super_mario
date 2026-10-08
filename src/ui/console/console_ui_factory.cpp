@@ -13,6 +13,7 @@ void ConsoleUIFactory::clear_data() {
 	full_boxes.clear();
 	ships.clear();
 	enemies.clear();
+	finishes.clear();
 	moneys.clear();
 	flying_enemies.clear();
 	jumping_enemies.clear();
@@ -38,6 +39,16 @@ void ConsoleUIFactory::create_enemy(
 	game->add_movable(enemy);
 	game->add_collisionable(enemy);
 	game_map->add_obj(enemy);
+}
+
+void ConsoleUIFactory::create_finish(
+    const Coord& top_left, const int width, const int height
+) {
+    ConsoleFinish* finish = new ConsoleFinish(top_left, width, height);
+    finishes.push_back(finish);
+    game->add_map_movable(finish);
+    game->add_finish(finish);
+    game_map->add_obj(finish);
 }
 
 void ConsoleUIFactory::create_flying_enemy(

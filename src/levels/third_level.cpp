@@ -42,4 +42,7 @@ void ThirdLevel::init_data() {
 	ui_factory->create_full_box({-704, 12}, 5, 3);
 
 	ui_factory->create_ship({-924, 24}, 15, 7);
+	
+	// Финиш уровня: зона-триггер на палубе последнего корабля.
+	ui_factory->create_finish({-924, 21}, 15, 3);
 }

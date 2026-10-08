@@ -1,7 +1,5 @@
 #include "moving_platform.hpp"
 
-#include <algorithm>
-
 #include "map_movable.hpp"
 
 using biv::MovingPlatform;
@@ -32,7 +30,8 @@ void MovingPlatform::move_horizontally() noexcept {
         hspeed = 0;
         return;
     }
-    const float min_x = std::max(0.0f, origin_x - PATROL_RANGE);
+
+    const float min_x = origin_x - PATROL_RANGE;
     const float max_x = origin_x + PATROL_RANGE;
 
     float next_x = top_left.x + direction * BASE_SPEED;

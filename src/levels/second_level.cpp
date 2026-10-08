@@ -48,4 +48,7 @@ void SecondLevel::init_data() {
 	ui_factory->create_flying_enemy({140, 6}, 3, 2);
 
 	ui_factory->create_ship({355, 20}, 15, 7);
+	
+	// Финиш уровня: зона-триггер на палубе последнего корабля.
+	ui_factory->create_finish({355, 17}, 15, 3);
 }

@@ -9,6 +9,7 @@
 #include "rect.hpp"
 
 namespace biv {
+    class Finish;
     class MovingPlatform;
 
     class Game {
@@ -18,6 +19,7 @@ namespace biv {
             std::vector<Collisionable*> collisionable_objs;
             std::vector<Movable*> movable_objs;
             std::vector<MovingPlatform*> moving_platforms;
+            std::vector<Finish*> finishes;
             
             Mario* mario = nullptr;
             
@@ -36,11 +38,16 @@ namespace biv {
             void add_movable(Movable*);
             void add_static_obj(Rect*);
             void add_moving_platform(MovingPlatform* platform);
+            void add_finish(Finish* finish);
             
             void check_horizontally_static_collisions() noexcept;
             void check_mario_collision();
             bool check_static_collisions(Collisionable* obj) const noexcept;
             void check_vertically_static_collisions() noexcept;
+
+            // Конец уровня наступает, когда Марио касается
+            // любого из объектов-финишей.
+            void check_finish() noexcept;
 
             // Марио проверяется с каждой движущейся платформой,
             // с которой столкнулся, - а также со всеми остальными объектами,
@@ -64,6 +71,7 @@ namespace biv {
             void remove_mario() noexcept;
             void remove_movable(Movable*);
             void remove_moving_platform(MovingPlatform*);
+            void remove_finish(Finish*);
             void remove_objs();
             void remove_static_obj(Rect*);
             

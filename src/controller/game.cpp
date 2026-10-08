@@ -1,6 +1,7 @@
 #include "game.hpp"
 
 #include <algorithm>
+#include "finish.hpp"
 #include "moving_platform.hpp"
 
 using biv::Game;
@@ -29,6 +30,10 @@ void Game::add_static_obj(Rect* obj) {
 
 void Game::add_moving_platform(MovingPlatform* platform) {
     moving_platforms.push_back(platform);
+}
+
+void Game::add_finish(Finish* finish) {
+    finishes.push_back(finish);
 }
 
 void Game::set_mario_intent_direction(int dir) noexcept {
@@ -138,13 +143,22 @@ void Game::check_obj_platform_collision(
     }
 }
 
-void Game::check_vertically_static_collisions() noexcept {
+void Game::check_finish() noexcept {
     if (mario == nullptr || !mario->is_active()) {
         return;
     }
 
-    if (!static_objs.empty() && mario->has_collision(static_objs.back())) {
-        is_level_end_ = true;
+    for (Finish* finish : finishes) {
+        if (mario->has_collision(finish)) {
+            is_level_end_ = true;
+            return;
+        }
+    }
+}
+
+void Game::check_vertically_static_collisions() noexcept {
+    if (mario == nullptr || !mario->is_active()) {
+        return;
     }
     
     for (Collisionable* obj : collisionable_objs) {
@@ -213,12 +227,17 @@ void Game::remove_moving_platform(MovingPlatform* obj) {
     remove_obj(moving_platforms, obj);
 }
 
+void Game::remove_finish(Finish* obj) {
+    remove_obj(finishes, obj);
+}
+
 void Game::remove_objs() {
     collisionable_objs.clear();
     map_movable_objs.clear();
     movable_objs.clear();
     static_objs.clear();
     moving_platforms.clear();
+    finishes.clear();
     remove_mario();
 }
 
