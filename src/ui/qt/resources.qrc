@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/sprites">
+        <file>resources/sprites/mario.png</file>
+        <file>resources/sprites/enemy.png</file>
+        <file>resources/sprites/flying_enemy.png</file>
+        <file>resources/sprites/jumping_enemy.png</file>
+        <file>resources/sprites/box.png</file>
+        <file>resources/sprites/full_box.png</file>
+        <file>resources/sprites/empty_box.png</file>
+        <file>resources/sprites/ground_top.png</file>
+        <file>resources/sprites/ground_sub.png</file>
+        <file>resources/sprites/money.png</file>
+        <file>resources/sprites/moving_platform.png</file>
+        <file>resources/sprites/finish.png</file>
+        <file>resources/sprites/cloud.png</file>
+        <file>resources/sprites/bush.png</file>
+    </qresource>
+</RCC>

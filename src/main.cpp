@@ -20,7 +20,6 @@
 */
 #include <thread>
 
-#include "console_ui_factory.hpp"
 #include "first_level.hpp"
 #include "game.hpp"
 #include "game_level.hpp"
@@ -30,16 +29,23 @@
 #include "os_control_settings.hpp"
 #include "ui_factory.hpp"
 
-#ifdef WINDOWS_CONSOLE
+#ifdef QT_GUI
+	#include <QApplication>
+	#include "qt_control_settings.hpp"
+	#include "qt_keyboard.hpp"
+	#include "qt_ui_factory.hpp"
+#elif defined(WINDOWS_CONSOLE)
+	#include "console_ui_factory.hpp"
 	#include "windows_control_settings.hpp"
 	#include "windows_keyboard.hpp"
 #elif defined(LINUX_CONSOLE)
+	#include "console_ui_factory.hpp"
 	#include "linux_control_settings.hpp"
 	#include "linux_keyboard.hpp"
 	#include "ncurses.h"
 #endif
 
-int main() {
+int main(int argc, char* argv[]) {
 	// 1. Установка параметров игры
 	using namespace std::chrono_literals;
 	
@@ -49,7 +55,12 @@ int main() {
 	
 	biv::OSControlSettings* control_settings = nullptr;
 	biv::KeyBoard* keyboard = nullptr;
-	#ifdef WINDOWS_CONSOLE
+	#ifdef QT_GUI
+		QApplication app(argc, argv);
+		control_settings = new biv::QtControlSettings();
+		keyboard = new biv::QtKeyboard();
+		frame_delay = std::chrono::milliseconds(20);
+	#elif defined(WINDOWS_CONSOLE)
 		control_settings = new biv::WindowsControlSettings();
 		keyboard = new biv::WindowsKeyBoard();
 		frame_delay = std::chrono::milliseconds(10);
@@ -63,7 +74,11 @@ int main() {
 	keyboard->on();
 	
 	biv::Game game;
-	biv::UIFactory* ui_factory = new biv::ConsoleUIFactory(&game);
+	#ifdef QT_GUI
+		biv::UIFactory* ui_factory = new biv::QtUIFactory(&game, dynamic_cast<biv::QtKeyboard*>(keyboard));
+	#else
+		biv::UIFactory* ui_factory = new biv::ConsoleUIFactory(&game);
+	#endif
 	biv::GameMap* game_map = ui_factory->get_game_map(map_height, map_weight);
 	biv::GameLevel* game_level = new biv::FirstLevel(ui_factory);
 	biv::Mario* mario = ui_factory->get_mario();
