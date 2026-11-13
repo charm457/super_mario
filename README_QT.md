@@ -341,31 +341,38 @@ for (int i = 0; i < get_width(); ++i) {
 
 ---
 
-## 6. Минимальные изменения в `main.cpp` и игровой цикл
+## 6. Организация `main.cpp` и паттерн AppFactory
 
-В `src/main.cpp` внесены **точечные изменения**, изолированные директивой условной компиляции `#ifdef QT_GUI`:
+В `src/main.cpp` инициализация платформенных зависимостей вынесена в паттерн **Abstract Factory** (`AppFactory`):
 
-1. Подключение заголовков Qt при активном макросе `QT_GUI`:
+1. **Базовый интерфейс `AppFactory` (`src/app_factory.hpp`)**:
+   Определяет контракт создания окружения ОС:
+   - `create_control_settings()` — создает настройки курсора/терминала или GUI.
+   - `create_keyboard()` — создает обработчик клавиатуры для конкретной платформы.
+   - `get_frame_delay()` — возвращает задержку между кадрами (мс).
+
+2. **Конкретные фабрики окружения**:
+   - `QTFactory` (`src/qt_factory.hpp / .cpp`) — инкапсулирует `QApplication app(argc, argv)`, возвращает `QtControlSettings`, `QtKeyboard` и задержку 20 мс.
+   - `WindowsAppFactory` (`src/windows_factory.hpp / .cpp`) — возвращает `WindowsControlSettings`, `WindowsKeyBoard` и задержку 10 мс.
+   - `LinuxAppFactory` (`src/linux_factory.hpp / .cpp`) — возвращает `LinuxControlSettings`, `LinuxKeyboard` и задержку 50 мс.
+
+3. **Компактная инициализация в `main.cpp`**:
    ```cpp
+   biv::AppFactory* app_factory = nullptr;
    #ifdef QT_GUI
-       #include <QApplication>
-       #include "qt_control_settings.hpp"
-       #include "qt_keyboard.hpp"
-       #include "qt_ui_factory.hpp"
+       app_factory = new biv::QTFactory(argc, argv);
    #elif defined(WINDOWS_CONSOLE)
-       ...
+       app_factory = new biv::WindowsAppFactory();
+   #elif defined(LINUX_CONSOLE)
+       app_factory = new biv::LinuxAppFactory(map_height, map_weight);
+   #endif
+
+   biv::OSControlSettings* control_settings = app_factory->create_control_settings();
+   biv::KeyBoard* keyboard = app_factory->create_keyboard();
+   auto frame_delay = app_factory->get_frame_delay();
    ```
-2. Инициализация `QApplication`, `QtControlSettings` и `QtKeyboard` в начале `main`:
-   ```cpp
-   #ifdef QT_GUI
-       QApplication app(argc, argv);
-       control_settings = new biv::QtControlSettings();
-       keyboard = new biv::QtKeyboard();
-       frame_delay = std::chrono::milliseconds(20);
-   #elif defined(WINDOWS_CONSOLE)
-       ...
-   ```
-3. Создание фабрики:
+
+4. **Создание фабрики UI**:
    ```cpp
    #ifdef QT_GUI
        biv::UIFactory* ui_factory = new biv::QtUIFactory(&game, dynamic_cast<biv::QtKeyboard*>(keyboard));

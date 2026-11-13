@@ -8,8 +8,6 @@ QtUIFactory::QtUIFactory(Game* game, QtKeyboard* keyboard)
 QtUIFactory::~QtUIFactory() {
 	delete mario;
 	mario = nullptr;
-	delete game_map;
-	game_map = nullptr;
 }
 
 void QtUIFactory::clear_data() {

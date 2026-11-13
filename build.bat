@@ -1,9 +1,12 @@
 @echo off
+cd /d "%~dp0"
+
+if exist C:\msys64\ucrt64\bin set PATH=C:\msys64\ucrt64\bin;%PATH%
 
 set BUILD_TYPE=Ninja
 set BUILD_SUFFIX=ninja
 
-chcp 65001
+chcp 65001 > nul
 
 set BUILD_FOLDER=build_windows_%BUILD_SUFFIX%
 set SOURCE_FOLDER=src

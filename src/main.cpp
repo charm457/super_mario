@@ -40,13 +40,13 @@ int main(int argc, char* argv[]) {
     const int map_weight = 200;
 
     biv::AppFactory* app_factory = nullptr;
-#ifdef QT_GUI
-    app_factory = new biv::QTFactory(argc, argv);
-#elif defined(WINDOWS_CONSOLE)
-    app_factory = new biv::WindowsAppFactory();
-#elif defined(LINUX_CONSOLE)
-    app_factory = new biv::LinuxAppFactory(map_height, map_weight);
-#endif
+    #ifdef QT_GUI
+        app_factory = new biv::QTFactory(argc, argv);
+    #elif defined(WINDOWS_CONSOLE)
+        app_factory = new biv::WindowsAppFactory();
+    #elif defined(LINUX_CONSOLE)
+        app_factory = new biv::LinuxAppFactory(map_height, map_weight);
+    #endif
 
     biv::OSControlSettings* control_settings = app_factory->create_control_settings();
     biv::KeyBoard* keyboard = app_factory->create_keyboard();
